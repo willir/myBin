@@ -9,7 +9,7 @@ from email.mime.text import MIMEText;
 from email.mime.multipart import MIMEMultipart;
 from operator import attrgetter
 from email.header import Header;
-import argparse;
+from optparse import OptionParser
 import getpass;
 
 url = "http://www.cian.ru/cat.php?deal_type=1&obl_id=1&city[0]=1&type=3&currency=2&minprice=1&maxprice=22000&mebel=1&mebel_k=1&wm=1&rfgr=1&room1=1&foot_min=15&only_foot=2"
@@ -102,23 +102,28 @@ def checkCain():
     prevRes = newRes;
 
 
-parser = argparse.ArgumentParser("Parse cian site for new offers. " +
+parser = OptionParser("Parse cian site for new offers. " +
                                  "And send reminder about it to specified email throw gmail.");
-parser.add_argument("--mailTo", help="email address from receiving reminders", 
-                    dest='mailTo', type=str, required=True)
-parser.add_argument("--mailFrom", help="email address from sending reminder", 
-                    dest='mailFrom', type=str, required=True)
-parser.add_argument("--mailUser", help="Account for gmail for sending reminder",
-                    dest='mailUser', type=str, required=True)
-parser.add_argument("--url", help="Web page for parse.", 
+parser.add_option("--mailTo", help="email address from receiving reminders",
+                    dest='mailTo', type=str)
+parser.add_option("--mailFrom", help="email address from sending reminder",
+                    dest='mailFrom', type=str)
+parser.add_option("--mailUser", help="Account for gmail for sending reminder",
+                    dest='mailUser', type=str)
+parser.add_option("--url", help="Web page for parse.",
                     dest='url', type=str)
-args = parser.parse_args();
+(options, args) = parser.parse_args();
 
-username = args.mailUser;
-fromaddr = args.mailFrom;
-toaddrs = args.mailTo.split(' ');
-if args.url:
-    url = args.url;
+username = options.mailUser;
+fromaddr = options.mailFrom;
+toaddrs = options.mailTo;
+if not username or not fromaddr or not toaddrs:
+    print '--mailTo, --mailFrom, --mailUser are required.'
+    exit(1);
+
+toaddrs = toaddrs.split(' ');
+if options.url:
+    url = options.url;
 password = getpass.getpass('Input password to email <' + fromaddr + '>: ')
 
 while True:
@@ -133,4 +138,3 @@ while True:
     except BaseException as e:
         print 'Some Exception has been raised:', e;
     time.sleep(60);
-
