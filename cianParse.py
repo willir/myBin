@@ -80,9 +80,10 @@ def checkCain():
 
     diffRes = newRes - prevRes;
     diffResList = sorted(list(diffRes), key=attrgetter('cost'));
-    printIterable(diffResList);
 
-    if diffRes:
+    if diffRes and prevRes:
+        printIterable(diffResList);
+
         subject = 'New offers on Cian. Auto delivery.';
         htmlBody = u'';
         htmlBody += '<html>\n';
@@ -131,6 +132,5 @@ while True:
         exit(1);
     except BaseException as e:
         print 'Some Exception has been raised:', e;
-    time.sleep(3);
-
+    time.sleep(60);
 
