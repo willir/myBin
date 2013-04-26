@@ -5,8 +5,8 @@ from optparse import OptionParser;
 import os;
 import re;
 
-parser = OptionParser("FIST_DIR SECOND_DIR \n" + \
-                      "Return files list which exist in first direcory but no exist in second.");
+parser = OptionParser("%prog [options] FIST_DIR SECOND_DIR",
+           description="Returns files list which exist in first direcory but no exist in second.");
 parser.add_option("-r", "--recursive", action="store_true", dest="recursive", 
                   help="Lookup all directory recursively?")
 parser.add_option("-d", "--delimiter", type=str, default=" ", dest="delimiter", 
