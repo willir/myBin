@@ -100,6 +100,9 @@ for line in lines:
     fromFile = topDir + '/' + arr[0];
     toFile = outDir + '/' + arr[1];
 
+    print arr[1];
+    continue;
+
     toFileDir = os.path.dirname(toFile);
     if not os.path.isdir(toFileDir):
         os.makedirs(toFileDir);

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import subprocess;
+import os;
 
 class CmdError(BaseException):
     returnCode = 0;
