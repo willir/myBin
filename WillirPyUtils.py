@@ -58,4 +58,25 @@ def runCommand(cmd, cwd=None, exception=False):
 #        else:
 #            raise argparse.ArgumentTypeError("ArgsReadableDir:{0} is not a readable dir".format(prospective_dir))
 
+def wilEnum(*sequential, **named):
+    '''
+    Returns Enum type. 
+    '''
+
+    enums = dict(zip(sequential, range(len(sequential))), **named);
+    reverse = dict((key, value) for key, value in enums.iteritems());
+    for key, value in enums.iteritems():
+        reverse[str(value)] = value;
+        reverse[value] = value;
+    enums['reverse_mapping'] = reverse;
+    return type('WilEnum', (), enums)
+
+def readInChunks(file_object, chunk_size=8*1024):
+    """Lazy function (generator) to read a file piece by piece.
+    Default chunk size: 8k."""
+    while True:
+        data = file_object.read(chunk_size)
+        if not data:
+            break
+        yield data
 
