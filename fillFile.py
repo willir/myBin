@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
 import os, sys;
-from sys import stdin;
-from sys import stdout;
-from sys import stderr;
 
 BUFF_SIZE = 1024 * 1024;
 
