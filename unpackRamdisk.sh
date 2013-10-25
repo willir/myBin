@@ -21,8 +21,6 @@ if [ $# -eq 2 ]; then
     toDir="$2";
 fi
 
-toDir="`readlink -f ${toDir}`";
-
 if [ ! -f "$ramdisk" ]; then
     echo "File $ramdisk is not a file or is absent";
     echo -e $USAGE;
