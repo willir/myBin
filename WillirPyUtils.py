@@ -2,23 +2,23 @@
 
 import subprocess;
 import os;
+import zipfile;
 
-class CmdError(BaseException):
+class CmdError(Exception):
     returnCode = 0;
     cmd = "";
     out = "";
     err = "";
 
-    def __init__(self, returnCode, cmd, out, err):
+    def __init__(self, returnCode, cmd, out = "", err = ""):
+        Exception.__init__(self, "Error("+ str(returnCode) + ") while execution command:'" + \
+                           str(cmd) + "'\n" + "StdOut:\n" + str(out) + "\n" + \
+                           "StdErr:\n" + str(err));
+
         self.returnCode = returnCode;
         self.cmd = cmd;
         self.out = out;
         self.err = err;
-
-    def __str__(self):
-        return "Error( "+ str(self.returnCode) + ") while execution command:'" + cmd + "'\n" + \
-               "out:" + out + "\n" + "err:" + err;
-
 
 def runCommand(cmd, cwd=None, exception=False):
     '''
@@ -44,19 +44,9 @@ def runCommand(cmd, cwd=None, exception=False):
     out, err = shell.communicate();
     returnCode = shell.returncode;
     if exception and returnCode != 0:
-        raise CmdError(returnCode, out, err);
+        raise CmdError(returnCode, cmd, out, err);
 
     return (returnCode, out, err);
-
-#class ArgsReadableDir(argparse.Action):
-#    def __call__(self, parser, namespace, values, option_string=None):
-#        prospective_dir=values
-#        if not os.path.isdir(prospective_dir):
-#            raise argparse.ArgumentTypeError("ArgsReadableDir:{0} is not a valid path".format(prospective_dir))
-#        if os.access(prospective_dir, os.R_OK):
-#            setattr(namespace, self.dest, prospective_dir)
-#        else:
-#            raise argparse.ArgumentTypeError("ArgsReadableDir:{0} is not a readable dir".format(prospective_dir))
 
 def wilEnum(*sequential, **named):
     '''
@@ -79,4 +69,12 @@ def readInChunks(file_object, chunk_size=8*1024):
         if not data:
             break
         yield data
+
+def hasApkSign(apkPath):
+    zipFile = zipfile.ZipFile(apkPath);
+    hasRsaFile = False;
+    for zFile in zipFile.namelist():
+        if zFile[-3:].lower() == 'RSA'.lower():
+            return True;
+    return False;
 
