@@ -49,7 +49,7 @@ class __ArgParseApkList(argparse.Action):
 
         for file in values:
             if os.path.isdir(file):
-                if args.r:
+                if args.recursive:
                     res.extend(self.recursParseDir(file));
                 else:
                     raise argparse.ArgumentError(self, "File " + file + " is dir;");
@@ -66,6 +66,12 @@ def getArgParseApkList(withSign = False):
 def getAndAssertApkList(recurse=False, withSign = False):
     ParserClass = getArgParseApkList(withSign);
 
+def argarsePathFileRoType(filePath):
+    try:
+       with open(filePath):
+           pass;
+    except IOError:
+        raise argparse.ArgumentError(None, "can't open '" + filePath + "' for reading.");
 
-
+    return filePath;
 

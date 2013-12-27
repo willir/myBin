@@ -3,9 +3,8 @@
 import os;
 import sys;
 import argparse;
-from WillirPy2_7Utils import getArgParseApkList;
+from WillirPy2_7Utils import getArgParseApkList, argarsePathFileRoType;
 from WillirPyUtils import runCommand;
-
 
 def getDictApkCerts(apkList):
     return __getDictApkCerts(apkList);
@@ -29,7 +28,7 @@ def __getDictApkCerts(apkList):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser();
-    parser.add_argument("-r", action="store_true", 
+    parser.add_argument("-r", action="store_true", dest="recursive" 
                         help="Make recursive search for all apk file in dirs?");
     parser.add_argument("-o", "--out", dest='out', type=argparse.FileType('w'), default=sys.stdout, 
                         help="File which will be contains all certs.");

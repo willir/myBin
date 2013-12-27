@@ -10,6 +10,6 @@ if [ ! -f $target ]; then
     exit 1;
 fi
 
-certFile="`unzip -l "$target" | grep -oPi "[^ ]+RSA$"`"
+certFile="`unzip -l "$target" | grep -oPi "[^ ]+(RSA|DSA)$"`"
 unzip -p "$target" "$certFile" | keytool -printcert
 

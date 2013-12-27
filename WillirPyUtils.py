@@ -74,7 +74,7 @@ def hasApkSign(apkPath):
     zipFile = zipfile.ZipFile(apkPath);
     hasRsaFile = False;
     for zFile in zipFile.namelist():
-        if zFile[-3:].lower() == 'RSA'.lower():
+        if zFile[-3:].upper() in ['RSA', 'DSA']:
             return True;
     return False;
 

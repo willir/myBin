@@ -12,7 +12,7 @@ def removeCertFromApk(apk):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Remove certification from apk files.");
-    parser.add_argument("-r", action="store_true", 
+    parser.add_argument("-r", action="store_true", dest="recursive", 
                         help="Make recursive search for all apk file in dirs?");
     parser.add_argument("apkList", nargs="+", action=getArgParseApkList(withSign=True), 
                         help="List of apk files.");
