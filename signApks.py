@@ -46,7 +46,7 @@ def signListOfApk(apkList, certPath, alias, storePass, keyPass, behavior):
         if hasSign and behavior == SignBehavior.SKIP:
             sys.stderr.write(" Skipped!\n");
             continue;
-        if not hasSign and behavior == SignBehavior.NORMAL:
+        if hasSign and behavior == SignBehavior.NORMAL:
             raise RuntimeError("Apk: '" + apk + "' already has sign.\n" + \
                                "You can use this script with -f or -s options.\n" + \
                                "See help for more detail.");
