@@ -41,7 +41,7 @@ class __ArgParseApkList(argparse.Action):
             filePath = dir + '/' + file;
             if os.path.isdir(filePath):
                 res.extend(self.recursParseDir(filePath));
-            elif os.path.isfile(filePath) and os.path.splitext(filePath)[1] in ('.apk'):
+            elif os.path.isfile(filePath) and os.path.splitext(filePath)[1] in ['.apk']:
                 try:
                     self.assertFile(filePath);
                 except argparse.ArgumentError as e:
