@@ -8,13 +8,13 @@ from WillirPyUtils import runCommand;
 
 def getPackageName(apk):
     (_, aaptStr, _) = runCommand("aapt d badging '" + apk + "'")
+
     prog = re.compile("package:\s+name='([^']+)'");
     regRes = prog.search(aaptStr);
     if not regRes:
         raise RuntimeError("Not match package in result of aapt.");
-    return regRes.group(1);
-    return __getDictApkCerts(apkList);
 
+    return regRes.group(1);
 
 if __name__ == "__main__":
 
