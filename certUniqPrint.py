@@ -12,6 +12,7 @@ def getDictApkCerts(apkList):
 def __getDictApkCerts(apkList):
     '''
     Returns dict where key is cert of apk, and value is set of all apks which has it cert.
+    @returns dict{str('certificate') => str('path/to/apk')}
     '''
 
     certs = dict();
@@ -28,7 +29,7 @@ def __getDictApkCerts(apkList):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser();
-    parser.add_argument("-r", action="store_true", dest="recursive" 
+    parser.add_argument("-r", action="store_true", dest="recursive", 
                         help="Make recursive search for all apk file in dirs?");
     parser.add_argument("-o", "--out", dest='out', type=argparse.FileType('w'), default=sys.stdout, 
                         help="File which will be contains all certs.");

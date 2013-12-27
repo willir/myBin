@@ -20,6 +20,12 @@ class __ArgParseApkList(argparse.Action):
 
     mWithSign = False;
 
+    def isRecursive(self):
+        if hasattr(self.__args, 'recursive'):
+            return self.__args.recursive;
+        else:
+            return False;
+
     def assertFile(self, apk):
         if not os.path.isfile(apk):
             raise argparse.ArgumentError(self, "File " + apk + " is not regular file;");
@@ -47,9 +53,14 @@ class __ArgParseApkList(argparse.Action):
     def __call__(self, parser, args, values, option_string=None):
         res = [];
 
+        self.__args = args;
+
+        if isinstance(values, basestring):
+            values = [values];
+
         for file in values:
             if os.path.isdir(file):
-                if args.recursive:
+                if self.isRecursive():
                     res.extend(self.recursParseDir(file));
                 else:
                     raise argparse.ArgumentError(self, "File " + file + " is dir;");
