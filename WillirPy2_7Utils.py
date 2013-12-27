@@ -54,6 +54,8 @@ class __ArgParseApkList(argparse.Action):
         res = [];
 
         self.__args = args;
+        print type(parser);
+        print type(args);
 
         if isinstance(values, basestring):
             values = [values];
@@ -74,8 +76,15 @@ def getArgParseApkList(withSign = False):
         mWithSign = withSign;
     return Res;
 
-def getAndAssertApkList(recurse=False, withSign = False):
+def getAndAssertApkList(apkList, recursive=False, withSign = False):
     ParserClass = getArgParseApkList(withSign);
+    parserObj = ParserClass(None, 'apkList');
+
+    args = argparse.Namespace(); 
+    setattr(args, 'recursive', recursive);
+
+    parserObj(None, args, apkList);
+    return args.apkList;
 
 def argarsePathFileRoType(filePath):
     try:

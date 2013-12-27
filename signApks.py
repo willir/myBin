@@ -1,6 +1,5 @@
 #!/usr/bin/env python2.7
 
-import os;
 import sys;
 import argparse;
 import getpass;
@@ -33,7 +32,7 @@ def signListOfApk(apkList, certPath, alias, storePass, keyPass, behavior):
     @param behavior type == SignBehavior.
     @throw RuntimeError if apk already has sign, and neither of force and skip have been set.
     '''
-    for apk in args.apkList:
+    for apk in apkList:
         sys.stderr.write("Signing " + apk + "...");
         hasSign = hasApkSign(apk);
 
@@ -55,7 +54,7 @@ def signListOfApk(apkList, certPath, alias, storePass, keyPass, behavior):
         signApk(apk, certPath, alias, storePass, keyPass);
         sys.stderr.write(" Signed!\n");
 
-def __getPasses(args):
+def getPasses(args):
     '''
     Returns tuple(storePass, aliasPass)
     '''
@@ -63,6 +62,9 @@ def __getPasses(args):
         storePass = args.storePass;
     else:
         storePass = getpass.getpass("Enter password for store '" + args.store +"':");
+
+    if not hasattr(args, 'alias') or not args.alias:
+        setattr(args, 'alias', 'All Alias in Store')
 
     if args.aliasPass:
         keyPass = args.aliasPass;
@@ -107,7 +109,7 @@ if __name__ == "__main__":
                         help="List of apk files.");
     args = parser.parse_args();
 
-    storePass, keyPass = __getPasses(args);
+    storePass, keyPass = getPasses(args);
     behavior = __getSignBehavior(args);
 
     signListOfApk(apkList=args.apkList, certPath=args.store, alias=args.alias, 

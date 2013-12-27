@@ -7,16 +7,13 @@ from WillirPyUtils import runCommand;
 from getPackageName import getPackageName;
 
 def getDictApkCerts(apkList):
-    return __getDictApkCerts(apkList);
-
-def __getDictApkCerts(apkList):
     '''
     Returns dict where key is cert of apk, and value is set of all apks which has it cert.
     @returns dict{str('certificate') => str('path/to/apk')}
     '''
 
     certs = dict();
-    for apk in args.apkList:
+    for apk in apkList:
         (_, cert, _) = runCommand('certApkPrint.sh "' + apk + '"', exception=True);
         cert = cert.strip();
         if certs.has_key(cert):
@@ -25,8 +22,11 @@ def __getDictApkCerts(apkList):
             certs[cert] = set([apk]);
     return certs;
 
-def __getDictApkCertsWithInfo(apkList):
-    rawCerts = __getDictApkCerts(apkList);
+def getDictApkCertsWithInfo(apkList):
+    '''
+    @returns dict{str('certificate') => dict {str('apk.package.name') => str('/path/to/apk')} }
+    '''
+    rawCerts = getDictApkCerts(apkList);
     res = dict();
     for cert in rawCerts.iterkeys():
         apksInfo = dict();
@@ -52,12 +52,12 @@ if __name__ == "__main__":
     args = parser.parse_args();
 
     if args.withInfo:
-        certs = __getDictApkCertsWithInfo(args.apkList);
+        certs = getDictApkCertsWithInfo(args.apkList);
         for cert in certs.iterkeys():
             certs[cert] = map(lambda (packName, apkPath): apkPath + ' : ' + packName, certs[cert].iteritems());
             certs[cert].sort();
     else:
-        certs = __getDictApkCerts(args.apkList);
+        certs = getDictApkCerts(args.apkList);
 
     for (cert, apkList) in certs.iteritems():
         args.out.write('\n'.join(apkList) + '\n');
