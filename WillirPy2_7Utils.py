@@ -54,8 +54,6 @@ class __ArgParseApkList(argparse.Action):
         res = [];
 
         self.__args = args;
-        print type(parser);
-        print type(args);
 
         if isinstance(values, basestring):
             values = [values];
