@@ -6,6 +6,7 @@ import getpass;
 from WillirPy2_7Utils import getArgParseApkList, argarsePathFileRoType;
 from WillirPyUtils import wilEnum, runCommand, hasApkSign;
 from certDelFromApks import removeCertFromApk;
+from alignApks import alignApk;
 
 '''
 NORMAL - Sign only apks which doesn't has sign. If Apk has sign then raise Exception
@@ -20,6 +21,8 @@ def signApk(apkPath, certPath, alias, storePass, keyPass):
           "-keystore '" + certPath + "' -storepass '" + storePass + "' " + \
           "-keypass '" + keyPass + "' '" + apkPath + "' '" + alias + "'"
     runCommand(cmd, exception=True);
+
+    alignApk(apkPath);
 
 def signListOfApk(apkList, certPath, alias, storePass, keyPass, behavior):
     '''
