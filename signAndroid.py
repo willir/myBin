@@ -48,7 +48,7 @@ class ArgsAndroidSystemDir(ArgsReadableDir):
         needSystemEntries = set(['app', 'framework', 'bin', 'build.prop', 'lib']);
         if needSystemEntries - set(dirEntries):
             raise argparse.ArgumentError(None, "'" + dirPath + "' is not a root of android system.\n" +\
-                                               "It shell contain " + needSystemEntries);
+                                               "It shall contains " + str(list(needSystemEntries)));
 
 if __name__ == "__main__":
 
