@@ -1,6 +1,5 @@
 #!/usr/bin/env python2.7
 
-import os;
 import sys;
 import argparse;
 from WillirPy2_7Utils import getArgParseApkList;

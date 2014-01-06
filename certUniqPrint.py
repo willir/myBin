@@ -24,7 +24,7 @@ def getDictApkCerts(apkList):
 
 def getDictApkCertsWithInfo(apkList):
     '''
-    @returns dict{str('certificate') => dict {str('apk.package.name') => str('/path/to/apk')} }
+    @returns dict{str(sign) => dict {str(apk.package.name) => str(/path/to/apk)} }
     '''
     rawCerts = getDictApkCerts(apkList);
     res = dict();

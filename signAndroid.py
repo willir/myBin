@@ -5,23 +5,33 @@ import sys;
 import argparse;
 import getpass;
 import signApks;
-from WillirPy2_7Utils import argarsePathFileRoType, getAndAssertApkList, ArgsReadableDir;
+from WillirPy2_7Utils import argarsePathFileRoType, getAndAssertApkList, ArgsAndroidSystemDir;
 from WillirPyUtils import wilEnum, runCommand, hasApkSign;
 from certDelFromApks import removeCertFromApk;
 from signApks import SignBehavior, signListOfApk;
 from certUniqPrint import getDictApkCertsWithInfo
 
+def signAndroidBySignsMap(signsMap, certPath, storePass, keyPass):
+    '''
+    Signs all apk specified (by signsMap) files in android.
+    @param signsMap:   Apk files and them signs which will be resigned.
+                       dict{str(sign) => dict {str(apk.package.name) => str(/path/to/apk)} }
+                       Results of certUniquePrint.getDictApkCertsWithInfo method.
+    @param certPath:   Path to jks certificate store by which apk files will be signed.
+    @param storePass:  Password from certificate store.
+    @param keyPass:    Password from all certificate in store. 
+    '''
 
-def signAndroid(systemPath, certPath, storePass, keyPass):
     behavior = SignBehavior.FORCE;
-    apkList = getAndAssertApkList(args.systemPath, recursive=True, withSign=False);
-
-    certs = getDictApkCertsWithInfo(apkList);
-    for cert in certs.iterkeys():
-        alias = __getAliasNameByPackageSet(set(certs[cert].keys()))
-        apkList = certs[cert].values();
+    for cert in signsMap.iterkeys():
+        alias = __getAliasNameByPackageSet(set(signsMap[cert].keys()))
+        apkList = signsMap[cert].values();
         signListOfApk(apkList, certPath, alias, storePass, keyPass, behavior);
 
+def signAndroid(systemPath, certPath, storePass, keyPass):
+    apkList = getAndAssertApkList(args.systemPath, recursive=True, withSign=False);
+    signsMap = getDictApkCertsWithInfo(apkList);
+    signAndroidBySignsMap(signsMap, certPath, storePass, keyPass);
 
 def __getAliasNameByPackageSet(packageSet):
     packToAliasDict = {'android' : 'platform',
@@ -37,18 +47,6 @@ def __getAliasNameByPackageSet(packageSet):
         return 'other';
     else:
         return packToAliasDict[matchApkSet.pop()];
-
-class ArgsAndroidSystemDir(ArgsReadableDir):
-    def __call__(self, parser, namespace, values, option_string=None):
-        super(ArgsAndroidSystemDir, self).__call__(parser, namespace, values, option_string);
-
-        dirPath = values;
-        dirEntries = os.listdir(dirPath);
-
-        needSystemEntries = set(['app', 'framework', 'bin', 'build.prop', 'lib']);
-        if needSystemEntries - set(dirEntries):
-            raise argparse.ArgumentError(None, "'" + dirPath + "' is not a root of android system.\n" +\
-                                               "It shall contains " + str(list(needSystemEntries)));
 
 if __name__ == "__main__":
 

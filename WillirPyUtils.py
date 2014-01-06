@@ -48,6 +48,13 @@ def runCommand(cmd, cwd=None, exception=False):
 
     return (returnCode, out, err);
 
+def checkCall(cmd, cwd=None):
+    '''
+    Runs command throw bash. 
+    @throw CmdError if returnCode != 0
+    '''
+    runCommand(cmd, cwd=cwd, exception=True);
+
 def wilEnum(*sequential, **named):
     '''
     Returns Enum type. 
