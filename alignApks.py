@@ -2,7 +2,7 @@
 
 # Dependence: 'zipalign' in PATH
 
-import os, stat, shutil, argparse, tempfile;
+import os, shutil, argparse, tempfile;
 from WillirPy2_7Utils import getArgParseApkList;
 from WillirPyUtils import runCommand;
 

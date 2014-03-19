@@ -11,8 +11,8 @@ def validateArgs():
         exit(1);
 
     try:
-       with open(pathToFile, 'a'):
-           pass;
+        with open(pathToFile, 'a'):
+            pass;
     except IOError:
         print 'Error while openning file', pathToFile;
         print USAGE;

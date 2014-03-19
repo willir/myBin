@@ -178,8 +178,8 @@ def getAndAssertOdexList(odexList, recursive=False):
 
 def argarsePathFileRoType(filePath):
     try:
-       with open(filePath):
-           pass;
+        with open(filePath):
+            pass;
     except IOError:
         raise argparse.ArgumentError(None, "can't open '" + filePath + "' for reading.");
 

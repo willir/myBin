@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 
-import os;
 from sys import stdin;
 from sys import stdout;
 from sys import stderr;

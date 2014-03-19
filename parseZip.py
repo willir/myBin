@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-import os;
 import argparse;
-
 
 class ZipParser:
     class RecordElement:
@@ -204,11 +202,10 @@ class ZipParser:
         elif markRec == self.MARK_ENDREC:
             return self.CONT_ENDREC;
         else:
-            raise IOError('Wrong zip file. Expect MARK, but got:' + arrToPrintedStr(pk));
+            raise IOError('Wrong zip file. Expect MARK, but got:' + self.arrToPrintedStr(pk));
 
     def __findEndRec(self):
         f = self.f;
-        startSeek = self.CONT_ENDREC_LEN + 4;
         f.seek(-22, 2);
         while True:
             pk = bytearray(f.read(2));
@@ -227,8 +224,7 @@ class ZipParser:
             f.seek(-3, 1);
 
     def __parseNextConRec(self):
-        f = self.f;
-        for i in range(self.endRecData['totalEntriesCentralDir']):
+        for _ in range(self.endRecData['totalEntriesCentralDir']):
             nextStruct = self.__parseRecMark(self.MARK_CENREC);
             self.lastConRecData = self.__parseRec(nextStruct);
             curSeek = self.f.tell();

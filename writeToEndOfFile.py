@@ -16,8 +16,8 @@ def parseArgs():
 
     targetFile = sys.argv[1];
     try:
-       with open(targetFile, 'r+'):
-           pass;
+        with open(targetFile, 'r+'):
+            pass;
     except IOError:
         print 'Error while openning file', targetFile;
         print USAGE;

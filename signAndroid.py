@@ -1,13 +1,8 @@
 #!/usr/bin/env python2.7
 
-import os;
-import sys;
 import argparse;
-import getpass;
 import signApks;
 from WillirPy2_7Utils import argarsePathFileRoType, getAndAssertApkList, ArgsAndroidSystemDir;
-from WillirPyUtils import wilEnum, runCommand, hasApkSign;
-from certDelFromApks import removeCertFromApk;
 from signApks import SignBehavior, signListOfApk;
 from certUniqPrint import getDictApkCertsWithInfo
 

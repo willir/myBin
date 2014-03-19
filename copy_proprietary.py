@@ -18,7 +18,6 @@ class GetVarValue:
         self.fileLines = fileLines;
 
     def parseMultiLines(self):
-        state = self.STATE_LINE_FINISH;
         newLines = [];
         tmpLine = '';
 
@@ -26,14 +25,12 @@ class GetVarValue:
             line = line.strip();
 
             if line.endswith('\\'):
-                state = self.STATE_LINE_CONT;
                 line = line[:-1].strip() + ' ';
                 tmpLine += line;
             else:
                 tmpLine += line;
                 newLines.append(tmpLine);
                 tmpLine = '';
-                state = self.STATE_LINE_FINISH;
 
         if tmpLine:
             newLines.append(tmpLine);

@@ -6,16 +6,16 @@ import time;
 import os;
 
 def touch(fname, times=(335518400, 335518400)):
-     os.utime(fname, times)
+    os.utime(fname, times)
 
 def mkdateType(datestring):
     return time.mktime(datetime.datetime.strptime(datestring, '%Y-%m-%d %H:%M:%S').timetuple());
 
-def dirType(dir):
-    if os.path.isdir(dir):
-        return dir;
+def dirType(dirPath):
+    if os.path.isdir(dirPath):
+        return dirPath;
     else:
-        raise ValueError(dir + ' is not dir.');
+        raise ValueError(dirPath + ' is not dir.');
 
 def recursiveTouch(filePath):
     if os.path.isdir(filePath):

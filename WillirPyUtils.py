@@ -79,7 +79,6 @@ def readInChunks(file_object, chunk_size=8*1024):
 
 def hasApkSign(apkPath):
     zipFile = zipfile.ZipFile(apkPath);
-    hasRsaFile = False;
     for zFile in zipFile.namelist():
         if zFile[-3:].upper() in ['RSA', 'DSA']:
             return True;
