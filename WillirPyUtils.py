@@ -9,10 +9,13 @@ class CmdError(Exception):
     cmd = "";
     out = "";
     err = "";
+    cwd = "";
 
-    def __init__(self, returnCode, cmd, out = "", err = ""):
+    def __init__(self, returnCode, cmd, out = "", err = "", cwd=""):
         Exception.__init__(self, "Error("+ str(returnCode) + ") while execution command:'" + \
-                           str(cmd) + "'\n" + "StdOut:\n" + str(out) + "\n" + \
+                           str(cmd) + "'\n" +
+                           "From path:'" + cwd + "'\n" + 
+                           "StdOut:\n" + str(out) + "\n" + \
                            "StdErr:\n" + str(err));
 
         self.returnCode = returnCode;
@@ -44,9 +47,18 @@ def runCommand(cmd, cwd=None, exception=False):
     out, err = shell.communicate();
     returnCode = shell.returncode;
     if exception and returnCode != 0:
-        raise CmdError(returnCode, cmd, out, err);
+        raise CmdError(returnCode=returnCode, cmd=cmd, out=out, err=err, cwd=cwd);
 
     return (returnCode, out, err);
+
+def checkOut(cmd, cwd=None):
+    '''
+    Runs command throw bash. 
+    @return: stdout of command as string.
+    @throw CmdError if returnCode != 0
+    '''
+    (_, res, _) = runCommand(cmd, cwd=cwd, exception=True);
+    return res;
 
 def checkCall(cmd, cwd=None):
     '''
