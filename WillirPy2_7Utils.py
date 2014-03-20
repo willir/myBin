@@ -36,6 +36,22 @@ class ArgsAndroidSystemDir(ArgsReadableDir):
             raise argparse.ArgumentError(None, "'" + dirPath + "' is not a root of android system.\n" +\
                                                "It shall contains " + str(list(needSystemEntries)));
 
+class ArgsAndroidSourceDir(ArgsReadableDir):
+    '''
+    Checks whether argparse parameter is android source root readable directory.
+    For 'action' parameter of 'argparse.ArgumentParser.add_argument' method.
+    '''
+    def __call__(self, parser, namespace, values, option_string=None):
+        super(ArgsAndroidSourceDir, self).__call__(parser, namespace, values, option_string);
+
+        dirPath = values;
+        dirEntries = os.listdir(dirPath);
+
+        needSystemEntries = set(['bionic', 'build', 'device', 'external', 'frameworks', '.repo']);
+        if needSystemEntries - set(dirEntries):
+            raise argparse.ArgumentError(None, "'" + dirPath + "' is not a root of android source.\n" +\
+                                               "It shall contains " + str(list(needSystemEntries)));
+
 
 class __ArgParseAbstractRecurseFileList(argparse.Action):
     __metaclass__ = abc.ABCMeta;
