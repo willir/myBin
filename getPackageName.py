@@ -4,10 +4,10 @@ import re;
 import sys;
 import argparse;
 from WillirPy2_7Utils import getArgParseApkList;
-from WillirPyUtils import runCommand;
+from WillirPyUtils import checkOut;
 
 def getPackageName(apk):
-    (_, aaptStr, _) = runCommand("aapt d badging '" + apk + "'")
+    aaptStr = checkOut("aapt d badging '" + apk + "'")
 
     prog = re.compile("package:\s+name='([^']+)'");
     regRes = prog.search(aaptStr);
