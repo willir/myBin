@@ -4,6 +4,39 @@ import subprocess;
 import os;
 import zipfile;
 
+class Colors:
+    noColor = '0';
+    black = '0;30';
+    blue = '0;34';
+    green = '0;32';
+    gyan = '0;36';
+    red = '0;31';
+    purple = '0;35';
+    orange = '0;33';
+    lightGray = '0;37';
+    darkGray = '1;30';
+    lightBlue = '1;34';
+    lightGreen = '1;32';
+    lightCyan = '1;36';
+    lightRed = '1;31';
+    lightPurple = '1;35';
+    yellow = '1;33';
+    white = '1;37';
+
+    colorBegin = '\033[';
+    colorEnd   = 'm';
+
+def colorize(text, color):
+    return Colors.colorBegin + color + Colors.colorEnd + \
+           text + \
+           Colors.colorBegin + Colors.noColor + Colors.colorEnd;
+
+def cRed(text):
+    return colorize(text, Colors.red);
+
+def cGreen(text):
+    return colorize(text, Colors.green);
+
 class CmdError(Exception):
     returnCode = 0;
     cmd = "";
