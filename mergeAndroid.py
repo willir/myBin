@@ -81,7 +81,7 @@ class MergeAndroid:
             sys.stderr.write(cGreen(' Success') + '\n');
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Signs apk files.");
+    parser = argparse.ArgumentParser(description="Merge two android sources.");
 
     parser.add_argument("--if-diff", dest="ifDiff", type=str,
                        help="Do merge only if there is different with specified branch/tag.");
