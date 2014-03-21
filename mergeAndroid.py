@@ -14,14 +14,18 @@ class MergeAndroid:
     toAndr = '';
     ifDiff = '';
     tmpRemote = '';
-    failedMerge = None; # list()
+    failedMerge  = None; # list of string
+    excludeRepos = None; # set of string;
 
-    def __init__(self, fromAndr, toAndr, ifDiff, tmpRemote=None):
+    def __init__(self, fromAndr, toAndr, ifDiff, tmpRemote=None, excludeRepos=None):
         self.fromAndr = fromAndr;
         self.toAndr = toAndr;
         self.ifDiff = ifDiff;
         self.tmpRemote = tmpRemote if tmpRemote else TMP_REMOTE_DEFAULT;
         self.failedMerge = list();
+
+        excludeRepos = excludeRepos if excludeRepos else [];
+        self.excludeRepos = set(reduce(lambda x,y: list(x)+list(y), excludeRepos)); #Two-Dim to One-Dim
 
     def mergeAndroids(self):
         '''
@@ -33,9 +37,12 @@ class MergeAndroid:
 
         repoList = getAndroidRepoPathList(self.fromAndr);
         for repo in repoList:
-            if self.__hasDiff(repo, self.ifDiff):
+            if repo in self.excludeRepos:
                 continue;
-            self.__mergeRepo(self.fromAndr + '/' + repo, self.toAndr + '/' + repo)
+            if not self.__hasDiff(repo, self.ifDiff):
+                continue;
+
+            self.__mergeRepo(self.fromAndr + '/' + repo, self.toAndr + '/' + repo);
 
         return self.failedMerge;
 
@@ -46,13 +53,13 @@ class MergeAndroid:
         (returnCode, otherCommit, _) = runCommand('git rev-parse ' + anotherCommit, cwd=repoPath);
         if returnCode != 0:
             return True;
-        return curCommit.strip() == otherCommit.strip();
+        return curCommit.strip() != otherCommit.strip();
 
     def __cloneRepo(self, fromRepo, toRepo):
         if not os.path.exists(toRepo):
             os.makedirs(toRepo, mode=0775);
 
-        sys.stderr.write('Cloning ' + fromRepo + ' to ' + fromRepo + '...');
+        sys.stderr.write('Cloning ' + fromRepo + ' to ' + toRepo + ' ....');
 
         checkCall('git clone ' + fromRepo + ' ' + toRepo);
         checkCall('git remote rename origin ' + self.tmpRemote, cwd=toRepo);
@@ -68,7 +75,7 @@ class MergeAndroid:
         if not os.path.exists(toRepo) or not os.path.exists(toRepoGit):
             return self.__cloneRepo(fromRepo, toRepo);
 
-        sys.stderr.write('Merging ' + fromRepo + ' to ' + fromRepo + '...');
+        sys.stderr.write('Merging ' + fromRepo + ' to ' + toRepo + ' ....');
         curBranch = getCurGitBranch(fromRepo);
 
         checkCall('git remote add ' + self.tmpRemote + ' ' + fromRepo, cwd=toRepo);
@@ -84,7 +91,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Merge two android sources.");
 
     parser.add_argument("--if-diff", dest="ifDiff", type=str,
-                       help="Do merge only if there is different with specified branch/tag.");
+                        help="Do merge only if there is different with specified branch/tag.");
+    parser.add_argument('-e', '--exclude', nargs='*', dest='excludeRepo', action='append',
+                        help="Exclude specified repos. You can use this argument multiple times " + \
+                             "for excluding multiple repositories.");
     parser.add_argument("fromAndroid", action=ArgsAndroidSourceDir,
                         help="Path to android with that merger will be made.");
     parser.add_argument("toAndroid", action=ArgsAndroidSourceDir,
@@ -92,7 +102,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args();
 
-    inst = MergeAndroid(args.fromAndroid, args.toAndroid, args.ifDiff);
+    inst = MergeAndroid(args.fromAndroid, args.toAndroid, args.ifDiff, excludeRepos=args.excludeRepo);
     failedMerge = inst.mergeAndroids();
 
     if failedMerge:
