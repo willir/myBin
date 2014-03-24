@@ -4,7 +4,7 @@ import argparse, os, sys;
 from os.path import realpath
 from WillirPy2_7Utils import ArgsAndroidSourceDir;
 from WillirPyUtils import checkOut, checkCall, runCommand, cRed, cGreen;
-from WillirGitUtils import getAndroidRepoPathList, getCurGitBranch;
+from WillirGitUtils import getAndroidRepoPathList, gitCurBranch;
 
 TMP_REMOTE_DEFAULT = 'tmpMerge'
 
@@ -63,7 +63,7 @@ class MergeAndroid:
 
         checkCall('git clone ' + fromRepo + ' ' + toRepo);
         checkCall('git remote rename origin ' + self.tmpRemote, cwd=toRepo);
-        checkCall('git checkout ' + getCurGitBranch(fromRepo), cwd=toRepo);
+        checkCall('git checkout ' + gitCurBranch(fromRepo), cwd=toRepo);
 
         sys.stderr.write(cGreen(' Success') + '\n');
 
@@ -76,7 +76,7 @@ class MergeAndroid:
             return self.__cloneRepo(fromRepo, toRepo);
 
         sys.stderr.write('Merging ' + fromRepo + ' to ' + toRepo + ' ....');
-        curBranch = getCurGitBranch(fromRepo);
+        curBranch = gitCurBranch(fromRepo);
 
         checkCall('git remote add ' + self.tmpRemote + ' ' + fromRepo, cwd=toRepo);
         checkCall('git fetch ' + self.tmpRemote, cwd=toRepo);
