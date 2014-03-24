@@ -22,6 +22,7 @@ class Colors:
     lightPurple = '1;35';
     yellow = '1;33';
     white = '1;37';
+    bold = '1'
 
     colorBegin = '\033[';
     colorEnd   = 'm';
@@ -36,6 +37,9 @@ def cRed(text):
 
 def cGreen(text):
     return colorize(text, Colors.green);
+
+def cBold(text):
+    return colorize(text, Colors.bold);
 
 class CmdError(Exception):
     returnCode = 0;
