@@ -17,11 +17,20 @@ def gitCurBranch(gitPath=None):
 def gitRemoteList(gitPath=None):
     return re.split('\s+', checkOut('git remote', cwd=gitPath).strip());
 
-def gitBranchList(gitPath=None):
+def gitBranchLocalList(gitPath=None):
     return filter(bool, re.split('[\*\s]+', checkOut('git branch', cwd=gitPath)));
+
+def gitBranchAllList(gitPath=None):
+    fun = lambda x: re.sub('^remotes\/', '', re.sub('\s+->\s+.*$', '', x.strip()));
+    return filter(bool, map(fun, re.split('[\*\n]+', checkOut('git branch -a', cwd=gitPath))));
 
 def gitBranchSha(branch, gitPath=None):
     '''
     Returns SHA-265 tag of specified branch or tag or other pointer to commit.
+    @raise WillirPyUtils.CmdError: If some errors was occur.
+                                   For example if specified branch is absent.
     '''
     return checkOut('git rev-parse ' + branch, cwd=gitPath).strip();
+
+def gitIsBranchExists(branch, gitPath=None):
+    return branch in gitBranchAllList(gitPath);
