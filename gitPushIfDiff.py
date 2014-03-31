@@ -3,7 +3,8 @@
 import argparse, os;
 from sys import stderr;
 from subprocess import call;
-from WillirGitUtils import gitRemoteList, gitBranchList, gitCurBranch, gitBranchSha;
+from WillirGitUtils import gitRemoteList, gitBranchLocalList, gitCurBranch, gitBranchSha;
+from WillirGitUtils import gitIsBranchExists;
 from WillirPyUtils import cRed, cBold;
 
 
@@ -24,7 +25,7 @@ def __normalizeBranch(branch):
     if not branch:
         return gitCurBranch();
 
-    branches = gitBranchList();
+    branches = gitBranchLocalList();
     if branch in branches:
         return branch;
 
@@ -41,7 +42,9 @@ def __normalizeArgs(remote, branch):
 
 def gitPushIfDiff(remote=None, branch=None):
     (remote, branch) = __normalizeArgs(remote, branch);
-    if gitBranchSha(branch) == gitBranchSha(remote + '/' + branch):
+
+    remoteBranch = remote + '/' + branch;
+    if gitIsBranchExists(remoteBranch) and gitBranchSha(branch) == gitBranchSha(remoteBranch):
         return;
 
     call(['/bin/bash', '-c', 'git push ' + remote + ' ' + branch]);
