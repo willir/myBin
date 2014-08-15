@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os;
 import shutil;
 import re;
 
 if __name__ == "__main__":
-    
+
     listFiles = os.listdir(os.getcwd());
 
     for aFile in listFiles:
