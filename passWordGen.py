@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-import sys
+import os
 from sys import stdout
 import argparse
 import struct
@@ -27,20 +27,23 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     words = filter(bool, map(lambda x: x.strip().split()[0], args.dict.readlines()))
-    words = decodeAll(words);
+    words = decodeAll(words)
     if args.wordlen:
-        words = filter(lambda x: len(x) <= args.wordlen, words);
+        words = filter(lambda x: len(x) <= args.wordlen, words)
 
     wordIndxs = []
     with open('/dev/random', 'r') as f:
         n = args.wordsNum;
         wordIndxs = map(lambda x: x%len(words), struct.unpack('<' +'I'*n, f.read(4*n)))
 
-    selectedWords = [words[i] for i in wordIndxs];
-    selectedWords = map(WillirPyUtils.transliterate, selectedWords)
+    selectedWords = [words[i] for i in wordIndxs]
+    selectedWordsEn = map(WillirPyUtils.transliterate, selectedWords)
 
-    stdout.write('Dictionary size:' + str(len(words)) + '\n');
+    stdout.write('Dictionary size:' + str(len(words)) + '\n')
 
     for word in selectedWords:
-        stdout.write(word + ' ');
-    stdout.write('\n');
+        stdout.write(word.encode('utf8') + ' ')
+    stdout.write(os.linesep)
+    for word in selectedWordsEn:
+        stdout.write(word + ' ')
+    stdout.write(os.linesep)
