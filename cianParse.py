@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import urllib;
-from lxml import html;
-import time;
-import smtplib;
-from email.mime.text import MIMEText;
-from email.mime.multipart import MIMEMultipart;
+import urllib
+from lxml import html
+import time
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from operator import attrgetter
-from email.header import Header;
+from email.header import Header
 from optparse import OptionParser
-import getpass;
+import getpass
+import traceback
 
 url = "http://www.cian.ru/cat.php?deal_type=1&obl_id=1&city[0]=1&type=3&currency=2&minprice=1&maxprice=22000&mebel=1&mebel_k=1&wm=1&rfgr=1&room1=1&foot_min=15&only_foot=2"
 prevRes = set()
@@ -77,8 +78,11 @@ def checkCain():
 
     newRes = set()
     for trEl in trElems:
+        linksRaw = trEl.xpath('./td[10]/div/a/@href')
+        if not linksRaw:
+            continue
+        link = normalizeLink(linksRaw[0])
         address = ' '.join(trEl.xpath('./td[2]/*/text()'))
-        link = normalizeLink(trEl.xpath('./td[10]/div/a/@href')[0])
         cost = trEl.xpath('./td[5]/text()')[0]
 
         newRes.add(Offer(address=address, link=link, cost=cost))
@@ -98,8 +102,12 @@ def checkCain():
         htmlBody += '<p>New offers on cian.</p>\n'
         htmlBody += '<p>Webpage: <a href="' + url + '">All offers</a></p>\n'
         htmlBody += '<p>New offers list:</p>\n'
-        for lineRes in diffResList:
-            htmlBody += '<p>' + lineRes.cost + ' ' + lineRes.address + \
+        for i in range(len(diffResList)):
+            lineRes = diffResList[i]
+            numStr = '<i>' + str(i + 1) + '.</i>&nbsp;'
+            if (i + 1) < 10:
+                numStr += '&nbsp;'
+            htmlBody += '<p>' + numStr + '<b>' + lineRes.cost + '</b> ' + lineRes.address + \
                         '. <a href="' + lineRes.link +'">Link to offer page</a></p>\n'
 
         htmlBody += '</body>\n</html>\n'
@@ -139,7 +147,9 @@ while True:
         exit(0)
     except smtplib.SMTPAuthenticationError as e:
         print e
+        traceback.print_exc()
         exit(1)
     except BaseException as e:
         print 'Some Exception has been raised:', e
+        traceback.print_exc()
     time.sleep(60)
