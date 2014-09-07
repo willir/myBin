@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import math
 from sys import stdout
 import argparse
 import struct
@@ -39,7 +40,9 @@ if __name__ == "__main__":
     selectedWords = [words[i] for i in wordIndxs]
     selectedWordsEn = map(WillirPyUtils.transliterate, selectedWords)
 
+    entropyBits = int(round(math.log(len(words) ** args.wordsNum, 2)))
     stdout.write('Dictionary size:' + str(len(words)) + '\n')
+    stdout.write('The number of entropy bits:' + str(entropyBits) + '\n')
 
     for word in selectedWords:
         stdout.write(word.encode('utf8') + ' ')
