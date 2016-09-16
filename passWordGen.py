@@ -9,13 +9,14 @@ import struct
 import chardet
 import WillirPyUtils
 
+
 def decodeAll(words):
-    checkedWords = ' '.join([words[0], words[1], words[-1], words[-2], words[len(words)/2]])
+    checkedWords = ' '.join(words)
     curCharset = chardet.detect(checkedWords)['encoding']
     return map(lambda x: x.decode(curCharset), words)
 
-if __name__ == "__main__":
 
+def main():
     parser = argparse.ArgumentParser(description="Generate password of the words from list.")
 
     parser.add_argument("dict", type=argparse.FileType('r'),
@@ -32,12 +33,12 @@ if __name__ == "__main__":
     if args.wordlen:
         words = filter(lambda x: len(x) <= args.wordlen, words)
 
-    wordIndxs = []
+    word_ids = []
     with open('/dev/random', 'r') as f:
-        n = args.wordsNum;
-        wordIndxs = map(lambda x: x%len(words), struct.unpack('<' +'I'*n, f.read(4*n)))
+        n = args.wordsNum
+        word_ids = map(lambda x: x % len(words), struct.unpack('<' + 'I' * n, f.read(4 * n)))
 
-    selectedWords = [words[i] for i in wordIndxs]
+    selectedWords = [words[i] for i in word_ids]
     selectedWordsEn = map(WillirPyUtils.transliterate, selectedWords)
 
     entropyBits = int(round(math.log(len(words) ** args.wordsNum, 2)))
@@ -50,3 +51,7 @@ if __name__ == "__main__":
     for word in selectedWordsEn:
         stdout.write(word + ' ')
     stdout.write(os.linesep)
+
+
+if __name__ == "__main__":
+    main()
