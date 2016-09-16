@@ -1,10 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 import urllib
 from lxml import html
 import time
 import smtplib
+import re
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from operator import attrgetter
@@ -14,10 +15,7 @@ import getpass
 import traceback
 
 url = "http://www.cian.ru/cat.php?deal_type=1&obl_id=1&city[0]=1&type=3&currency=2&minprice=1&maxprice=22000&mebel=1&mebel_k=1&wm=1&rfgr=1&room1=1&foot_min=15&only_foot=2"
-prevRes = set()
-password = ''
-fromaddr = ''
-toaddrs  = []
+prev_res = set()
 
 
 class Offer:
@@ -40,17 +38,16 @@ class Offer:
         return self.__str__()
 
 
-def normalizeLink(link):
+def normalize_link(link):
     if link.startswith('/'):
         link = 'http://cian.ru' + link
     return link
 
 
-def sendMail(mailBody, subject):
-
+def send_mail(mailBody, subject):
     msg = MIMEMultipart('alternative', "utf-8")
     msg['Subject'] = Header(subject.encode('utf-8'), 'utf-8')
-    msg['From'] = fromaddr
+    msg['From'] = from_addr
     msg['To'] = ', '.join(toaddrs)
     msg.preamble = "You can't read html mail"
 
@@ -61,36 +58,45 @@ def sendMail(mailBody, subject):
     server = smtplib.SMTP('smtp.gmail.com:587')  
     server.starttls()
     server.login(username, password)  
-    server.sendmail(fromaddr, toaddrs, msg.as_string())  
+    server.sendmail(from_addr, toaddrs, msg.as_string())
     server.quit()
 
 
 def printIterable(iterable):
     for el in iterable:
-        print el
+        print(el)
 
 
 def checkCain():
-    global prevRes
+    global prev_res
 
     page = html.fromstring(urllib.urlopen(url).read())
-    trElems = page.xpath('//div/fieldset/table[@class="cat"]/tr[@bgcolor="white"]')
 
-    newRes = set()
-    for trEl in trElems:
-        linksRaw = trEl.xpath('./td[10]/div/a/@href')
-        if not linksRaw:
+    items = page.xpath('//div[@id="content"]/div/div[contains(@class, "serp-item")]')
+
+    new_res = set()
+    for item in items:
+
+        links_raw = item.xpath('./div[@class="serp-item__content"]/div/div/a/@href')
+
+        if not links_raw:
             continue
-        link = normalizeLink(linksRaw[0])
-        address = ' '.join(trEl.xpath('./td[2]/*/text()'))
-        cost = trEl.xpath('./td[5]/text()')[0]
+        link = normalize_link(links_raw[0])
+        address = ' '.join(item.xpath('.//div[@class="serp-item__address-precise"]/*/text()'))
 
-        newRes.add(Offer(address=address, link=link, cost=cost))
+        cost = '; '.join(item.xpath('.//div[@class="serp-item__price-col"]/*/text()'))
+        cost = re.sub(r'\s+', ' ', cost)
+        cost = re.sub(r'\s+;', ';', cost)
+        cost = cost.strip()
 
-    diffRes = newRes - prevRes
+        new_res.add(Offer(address=address, link=link, cost=cost))
+
+    diffRes = new_res - prev_res
     diffResList = sorted(list(diffRes), key=attrgetter('cost'))
 
-    if diffRes and prevRes:
+#   If you don't want to get mail with first results, uncomment this line, and comment next.
+#    if diffRes and prev_res:
+    if diffRes:
         printIterable(diffResList)
 
         subject = 'New offers on Cian. Auto delivery.'
@@ -111,8 +117,8 @@ def checkCain():
                         '. <a href="' + lineRes.link +'">Link to offer page</a></p>\n'
 
         htmlBody += '</body>\n</html>\n'
-        sendMail(htmlBody, subject)
-    prevRes = newRes
+        send_mail(htmlBody, subject)
+    prev_res = new_res
 
 
 parser = OptionParser("Parse cian site for new offers. " +
@@ -128,28 +134,28 @@ parser.add_option("--url", help="Web page for parse.",
 (options, args) = parser.parse_args()
 
 username = options.mailUser
-fromaddr = options.mailFrom
+from_addr = options.mailFrom
 toaddrs = options.mailTo
-if not username or not fromaddr or not toaddrs:
-    print '--mailTo, --mailFrom, --mailUser are required.'
+if not username or not from_addr or not toaddrs:
+    print('--mailTo, --mailFrom, --mailUser are required.')
     exit(1)
 
 toaddrs = toaddrs.split(' ')
 if options.url:
     url = options.url
-password = getpass.getpass('Input password to email <' + fromaddr + '>: ')
+password = getpass.getpass('Input password to email <' + from_addr + '>: ')
 
 while True:
     try:
         checkCain()
     except KeyboardInterrupt as e:
-        print 'Ctrl-C'
+        print('Ctrl-C')
         exit(0)
     except smtplib.SMTPAuthenticationError as e:
-        print e
+        print(e)
         traceback.print_exc()
         exit(1)
     except BaseException as e:
-        print 'Some Exception has been raised:', e
+        print('Some Exception has been raised:', e)
         traceback.print_exc()
     time.sleep(60)
