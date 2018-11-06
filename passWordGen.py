@@ -28,13 +28,13 @@ def main():
 
     args = parser.parse_args()
 
-    words = filter(bool, map(lambda x: x.strip().split()[0], args.dict.readlines()))
+    words = filter(bool, map(lambda x: x.strip() and x.strip().split()[0], args.dict.readlines()))
     words = decodeAll(words)
     if args.wordlen:
         words = filter(lambda x: len(x) <= args.wordlen, words)
 
     word_ids = []
-    with open('/dev/random', 'r') as f:
+    with open('/dev/urandom', 'r') as f:
         n = args.wordsNum
         word_ids = map(lambda x: x % len(words), struct.unpack('<' + 'I' * n, f.read(4 * n)))
 
