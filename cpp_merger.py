@@ -6,7 +6,7 @@ import re
 import sys
 
 try:
-    from typing import Dict, List, Union
+    from typing import Dict, List, Union, Optional
 except ImportError:
     pass
 
@@ -26,6 +26,7 @@ class CppMerger:
         self._in_files = in_files
         self._out_file = out_file
         self._visited_files = []
+        self._cur_file = ""
 
     def __enter__(self):
         self._fw = open(self._out_file, 'w')
@@ -39,6 +40,9 @@ class CppMerger:
             self._merge_file(in_file)
 
     def _merge_file(self, file_name):
+        prev_cur_file = self._cur_file
+        self._cur_file = file_name
+
         self._mark_as_visited(file_name)
 
         self._write_separator(file_name, is_before=True)
@@ -51,13 +55,25 @@ class CppMerger:
                     self._fw.write(line)
                     continue
                 include_name = m.group(1)
-                if not os.path.isfile(include_name):
+                include_path = self._find_include_file_path(include_name)
+                if not include_path:
                     self._fw.write(line)
                     continue
-                elif not self._is_visited(include_name):
-                    self._merge_file(include_name)
+                elif not self._is_visited(include_path):
+                    self._merge_file(include_path)
 
         self._write_separator(os.path.basename(file_name), is_before=False)
+        self._cur_file = prev_cur_file
+
+    def _find_include_file_path(self, include_name: str) -> 'Optional[str]':
+        if os.path.isfile(include_name):
+            return include_name
+        cur_file_dir = os.path.dirname(self._cur_file)
+        from_cur_file = os.path.join(cur_file_dir, include_name)
+        if os.path.isfile(from_cur_file):
+            return from_cur_file
+
+        return None
 
     def _is_visited(self, file_name):
         return any(os.path.samefile(file_name, x) for x in self._visited_files)
@@ -151,7 +167,7 @@ def main():
     parser.add_argument('out', type=str)
     args = parser.parse_args()
 
-    if args.in_file == 'CMakeLists.txt':
+    if os.path.basename(args.in_file) == 'CMakeLists.txt':
         from_cmake(args.in_file, args.out)
     else:
         from_cpp(args.in_file, args.out)
